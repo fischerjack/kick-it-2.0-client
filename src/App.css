@@ -1,24 +1,95 @@
-.App {
+body{
+  height: 100%;
+  margin: 0;
+}
+
+.chat-box{
+  flex: 0 1 auto;
+  height: 10rem;
+  border-top: 1px solid black;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-history{
+  flex: 1 1 auto;
+  overflow: scroll;
+}
+
+.chat-submit{
+  flex: 0 1 auto;
+  height: 2rem;
+  border-top: 1px black solid;
+}
+
+.chat-title{
   text-align: center;
+  margin: 0;
 }
 
-.App-logo {
-  animation: App-logo-spin infinite 20s linear;
-  height: 80px;
+.container{
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
-.App-header {
-  background-color: #222;
-  height: 150px;
-  padding: 20px;
-  color: white;
+.friends-list-sidebar{
+  flex: 0 1 auto;
+  width: 10rem;
+  border-left: 1px solid black;
 }
 
-.App-intro {
-  font-size: large;
+.footer{
+  flex: 0 1 40px;
+  border-top: 1px solid black;
 }
 
-@keyframes App-logo-spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+.nav-style{
+  display: flex;
+  align-items: center;
+  height: 3rem;
+  flex: 0 1 auto;
+  border-bottom: 1px solid black;
+}
+
+.nav-style > div{
+  padding-left: 1rem;
+  
+}
+
+.signup-login{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+}
+
+.signup-login form{
+  display: flex;
+  flex-direction: column;
+}
+
+.lobby{
+  flex: 1 1 auto;
+  display: flex;
+}
+
+.users-online-sidebar{
+  flex: 0 1 auto;
+  width: 10rem;
+  border-right: 1px solid black;
+}
+
+.game-and-chat{
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.game-list{
+  flex: 1 1 auto;
+}
+
+.logout{
+  margin-left: auto;
 }
