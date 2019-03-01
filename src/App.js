@@ -25,7 +25,8 @@ class App extends Component {
     this.state = {
       loggedInUser: null,
       messageHistory: [],
-      usersOnline: []
+      usersOnline: [],
+      inGame: null
     };
 
     this.topSocket = io('localhost:5000');
@@ -35,36 +36,58 @@ class App extends Component {
     });
 
     this.topSocket.on('RECEIVE_NEW_USER_ONLINE', (user) => {
-      this.addToUsersOnline(user);
+        console.log(user);
+        this.updateUsersOnline(user);
+        console.log(user);
     });
 
     this.topSocket.on('RECEIVE_DELETE_FROM_USERS_ONLINE', (user) => {
-      console.log(this.state.usersOnline)
-      this.deleteFromUsersOnline(user);
-      console.log(this.state.usersOnline)
+      console.log(user);
+      this.updateUsersOnline(user);
+      console.log(user);
     });
+
   }
 
-  deleteFromUsersOnline = (user) => {
-    const usersOnlineCopy = this.state.usersOnline;
-    
-    const indexToRemove = usersOnlineCopy.findIndex((element) => {
-      return element._id === user._id;
-    });
+  handleWindowBeforeUnload = (e) => {
+    this.topSocket.emit('SEND_DELETE_FROM_USERS_ONLINE', this.state.loggedInUser);
+    return;
+  }
 
-    usersOnlineCopy.splice(indexToRemove, 1);
+  componentDidMount() {
+    window.addEventListener("beforeunload", e => this.handleWindowBeforeUnload(e));
+  }
+  
+  componentWillUnmount() {
+    window.removeEventListener("beforeunload", e => this.handleWindowBeforeUnload(e));
+  }
 
+
+  updateUsersOnline = (usersOnline) => {
     this.setState({
-      usersOnline: usersOnlineCopy
+      usersOnline: usersOnline
     });
   }
 
-  addToUsersOnline = (user) => {
-    this.setState({
-      usersOnline: [...this.state.usersOnline, user]
-    });
-    console.log(this.state.usersOnline)
-  }
+  // deleteFromUsersOnline = (user) => {
+  //   const usersOnlineCopy = this.state.usersOnline;
+  //   const indexToRemove = usersOnlineCopy.findIndex((element) => {
+  //     return element._id === user._id;
+  //   });
+  //   usersOnlineCopy.splice(indexToRemove, 1);
+
+  //   this.setState({
+  //     usersOnline: usersOnlineCopy
+  //   });
+  // }
+
+  // addToUsersOnline = (usersOnline) => {
+  //   console.log(usersOnline);
+  //   this.setState({
+  //     usersOnline: usersOnline
+  //   });
+  //   console.log(this.state.usersOnline)
+  // }
 
   addMessage = (data) => {
     const {username, message} = data;
@@ -97,17 +120,11 @@ class App extends Component {
     });
     
     if(this.state.loggedInUser !== null){
-      const { username, _id } = userObj;
-
       this.topSocket.emit('SEND_MESSAGE', {
         username: 'Login Notifier',
-        message: `${username} has logged in`
+        message: `${userObj.username} has logged in`
       });
-      
-      this.topSocket.emit('SEND_NEW_USER_ONLINE', {
-        _id,
-        username
-      });
+      this.topSocket.emit('SEND_NEW_USER_ONLINE', { ...userObj });
     }
     
   }

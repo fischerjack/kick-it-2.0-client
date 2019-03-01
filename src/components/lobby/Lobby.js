@@ -3,7 +3,7 @@ import UsersOnlineSidebar from './UsersOnlineSidebar';
 import GamesList from './game/GamesList';
 import ChatBox from './chat/ChatBox';
 import FriendsListSidebar from './FriendsListSidebar';
-
+import GameView from './game/GameView';
 
 class Lobby extends Component{
   constructor(props){
@@ -11,16 +11,31 @@ class Lobby extends Component{
   }
 
   render(){
-    return (
-      <div className='lobby'>
-        <UsersOnlineSidebar {...this.props} />
-        <div className='game-and-chat'>
-          <GamesList />
-          <ChatBox {...this.props}/>
+    {console.log(this.props.inGame)}
+    if(this.props.inGame == null){
+      return (
+        <div className='lobby'>
+          <UsersOnlineSidebar {...this.props} />
+          <div className='game-and-chat'>
+            <GamesList {...this.props} />
+            <ChatBox {...this.props}/>
+          </div>
+          <FriendsListSidebar />
         </div>
-        <FriendsListSidebar />
-      </div>      
-    );
+      );
+    } else {
+      return (
+        <div className='lobby'>
+          <UsersOnlineSidebar {...this.props} />
+          <div className='game-and-chat'>
+            <GameView {...this.props} />
+            <ChatBox {...this.props}/>
+          </div>
+          <FriendsListSidebar />
+        </div>
+      );
+    }
+    
   }
 
 }
