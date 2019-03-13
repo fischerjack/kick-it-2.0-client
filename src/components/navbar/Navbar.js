@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {Link} from 'react-router-dom';
-import AuthService from '../auth/auth-service';
+
 
 class Navbar extends Component{
   
@@ -9,7 +9,7 @@ class Navbar extends Component{
     this.state = {
       loggedInUser: null
     };
-    this.service = new AuthService();
+    
   }
   
   componentWillReceiveProps(nextProps){
@@ -17,22 +17,6 @@ class Navbar extends Component{
       ...this.state,
       loggedInUser: nextProps['userInSession']
     });
-  }
-
-  logoutUser = () => {
-    this.service.logout()
-      .then(() => {
-        const user = this.state.loggedInUser;
-        this.props.topSocket.emit('SEND_MESSAGE', {
-          username: `Logout Notifier`,
-          message: `${user.username} has logged out`
-        });
-        this.props.topSocket.emit('SEND_DELETE_FROM_USERS_ONLINE', user);
-        this.setState({
-          loggedInUser: null
-        });
-        this.props.getUser(null);
-      });
   }
   
   render(){
@@ -44,7 +28,7 @@ class Navbar extends Component{
           <div><Link to='/profile'>Profile</Link></div>
           <div>
             <Link to={'/'}>
-              <button onClick={() => this.logoutUser()}>Logout</button>
+              <button onClick={() => this.props.logoutUser()}>Logout</button>
             </Link>
           </div>
         </nav>

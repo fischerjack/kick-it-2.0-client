@@ -28,7 +28,7 @@ class Login extends Component{
           username: '',
           password: ''
         });
-        this.props.getUser(res);
+        this.props.setTheUser(res);
       })
       .catch( err => {
         console.log(err);

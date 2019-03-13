@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import UsersOnlineSidebar from './UsersOnlineSidebar';
-import GamesList from './game/GamesList';
+import GameList from './game/GameList';
 import ChatBox from './chat/ChatBox';
 import FriendsListSidebar from './FriendsListSidebar';
 import GameView from './game/GameView';
@@ -11,13 +11,12 @@ class Lobby extends Component{
   }
 
   render(){
-    {console.log(this.props.inGame)}
-    if(this.props.inGame == null){
+    if(this.props.inGame == false){
       return (
         <div className='lobby'>
           <UsersOnlineSidebar {...this.props} />
           <div className='game-and-chat'>
-            <GamesList {...this.props} />
+            <GameList {...this.props} createNewGame={this.props.createNewGame}/>
             <ChatBox {...this.props}/>
           </div>
           <FriendsListSidebar />
@@ -28,7 +27,7 @@ class Lobby extends Component{
         <div className='lobby'>
           <UsersOnlineSidebar {...this.props} />
           <div className='game-and-chat'>
-            <GameView {...this.props} />
+            <GameView {...this.props} endGame={this.props.endGame}/>
             <ChatBox {...this.props}/>
           </div>
           <FriendsListSidebar />

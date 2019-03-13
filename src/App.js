@@ -3,8 +3,9 @@
 import React, { Component } from 'react';
 import {Switch, Route } from 'react-router-dom';
 
+
+
 //Styling
-import logo from './logo.svg';
 import './App.css';
 
 //My components
@@ -17,6 +18,8 @@ import Lobby from './components/lobby/Lobby';
 import io from 'socket.io-client';
 
 
+import AuthService from './components/auth/auth-service';
+
 
 class App extends Component {
   
@@ -26,9 +29,10 @@ class App extends Component {
       loggedInUser: null,
       messageHistory: [],
       usersOnline: [],
-      inGame: null
+      gameList: [],
+      inGame: false,
+      authService: new AuthService()
     };
-
     this.topSocket = io('localhost:5000');
 
     this.topSocket.on('RECEIVE_MESSAGE', (data) => {
@@ -36,20 +40,31 @@ class App extends Component {
     });
 
     this.topSocket.on('RECEIVE_NEW_USER_ONLINE', (user) => {
-        console.log(user);
         this.updateUsersOnline(user);
-        console.log(user);
     });
 
     this.topSocket.on('RECEIVE_DELETE_FROM_USERS_ONLINE', (user) => {
-      console.log(user);
       this.updateUsersOnline(user);
-      console.log(user);
     });
 
+    this.topSocket.on('RECEIVE_UPDATE_GAMELIST', (gameList) => {
+      console.log(gameList);
+      this.setState({
+        gameList
+      })
+    });
+
+    this.topSocket.on('RECEIVE_END_GAME', (data) => {
+      console.log(data.message);
+      this.setState({
+        inGame: false,
+        gameList: data.gameList
+      });
+    })
   }
 
   handleWindowBeforeUnload = (e) => {
+    this.topSocket.emit('SEND_END_GAME', this.state.loggedInUser);
     this.topSocket.emit('SEND_DELETE_FROM_USERS_ONLINE', this.state.loggedInUser);
     return;
   }
@@ -69,25 +84,40 @@ class App extends Component {
     });
   }
 
-  // deleteFromUsersOnline = (user) => {
-  //   const usersOnlineCopy = this.state.usersOnline;
-  //   const indexToRemove = usersOnlineCopy.findIndex((element) => {
-  //     return element._id === user._id;
-  //   });
-  //   usersOnlineCopy.splice(indexToRemove, 1);
+  updateUserBio = (bio) =>{
+    this.setState({
+      loggedInUser: {
+        ...this.state.loggedInUser,
+        bio
+      }
+    })
+  }
 
-  //   this.setState({
-  //     usersOnline: usersOnlineCopy
-  //   });
-  // }
+  logoutUser = () => {
+    this.state.authService.logout()
+      .then(() => {
+        const user = this.state.loggedInUser;
+        this.topSocket.emit('SEND_MESSAGE', {
+          username: `Logout Notifier`,
+          message: `${user.username} has logged out`
+        });
+        this.topSocket.emit('SEND_DELETE_FROM_USERS_ONLINE', user);
+        this.setTheUser(null);
+      });
+  }
 
-  // addToUsersOnline = (usersOnline) => {
-  //   console.log(usersOnline);
-  //   this.setState({
-  //     usersOnline: usersOnline
-  //   });
-  //   console.log(this.state.usersOnline)
-  // }
+  createNewGame = () => {
+    this.topSocket.emit('SEND_UPDATE_GAMELIST', {
+      _id: this.state.loggedInUser._id
+    });
+    this.setState({
+      inGame: true
+    })
+  }
+
+  endGame = () => {
+    this.topSocket.emit('SEND_END_GAME', this.state.loggedInUser);
+  }
 
   addMessage = (data) => {
     const {username, message} = data;
@@ -95,24 +125,8 @@ class App extends Component {
       messageHistory: [...this.state.messageHistory, {username, message}]
     });
   }
-
-  fetchUser(){
-    if(this.state.loggedInUser === null){
-      this.service.loggedin()
-        .then(res => {
-          this.setState({
-            loggedInUser: res
-          });
-        })
-        .catch( err => {
-          this.setState({
-            loggedInUser: false
-          });
-        });
-    }
-  }
   
-  getTheUser = (userObj) => {
+  setTheUser = (userObj) => {
     
     this.setState({
       loggedInUser: userObj,
@@ -125,6 +139,7 @@ class App extends Component {
         message: `${userObj.username} has logged in`
       });
       this.topSocket.emit('SEND_NEW_USER_ONLINE', { ...userObj });
+      this.topSocket.emit('SEND_UPDATE_GAMELIST', null);
     }
     
   }
@@ -133,10 +148,10 @@ class App extends Component {
     if(this.state.loggedInUser){
       return (
         <div className='container'>
-          <Navbar userInSession={this.state.loggedInUser} getUser={this.getTheUser} topSocket={this.topSocket}></Navbar>
+          <Navbar userInSession={this.state.loggedInUser} logoutUser={this.logoutUser}></Navbar>
           <Switch>
-            <ProtectedRoute user={this.state.loggedInUser} messageHistory={this.state.messageHistory} topSocket={this.topSocket} usersOnline={this.state.usersOnline} exact path='/' component={Lobby}/>
-            <ProtectedRoute user={this.state.loggedInUser} exact path='/profile' component={Profile}></ProtectedRoute>
+            <ProtectedRoute loggedInUser={this.state.loggedInUser} exact path='/' render={() => <Lobby {...this.state} createNewGame={this.createNewGame} endGame={this.endGame}/>}/>
+            <ProtectedRoute loggedInUser={this.state.loggedInUser} exact path='/profile' render={() => <Profile loggedInUser={this.state.loggedInUser} updateUserBio={this.updateUserBio} logoutUser={this.logoutUser}/>}/>
           </Switch>
           <div className='footer'></div>
         </div>
@@ -146,8 +161,8 @@ class App extends Component {
         <div>
           <Navbar userInSession={this.state.loggedInUser}></Navbar>
           <Switch>
-            <Route exact path='/signup'render={() => <Signup getUser={this.getTheUser} />} />
-            <Route exact path='/' render={() => <Login getUser={this.getTheUser} />}/>
+            <Route exact path='/signup'render={() => <Signup setTheUser={this.setTheUser} />} />
+            <Route path='/' render={() => <Login setTheUser={this.setTheUser} />}/>
           </Switch>
         </div>
       );  

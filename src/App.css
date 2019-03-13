@@ -14,6 +14,7 @@ body{
   border-top: 1px solid black;
   display: flex;
   flex-direction: column;
+  
 }
 
 .chat-history{
@@ -29,13 +30,19 @@ body{
 
 .chat-title{
   text-align: center;
-  margin: 0;
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
+  border-bottom: 1px solid grey;
 }
 
 .container{
   height: 100vh;
   display: flex;
   flex-direction: column;
+}
+
+.delete-user{
+  margin-top: auto;
 }
 
 .friends-list-sidebar{
@@ -47,6 +54,58 @@ body{
 .footer{
   flex: 0 1 40px;
   border-top: 1px solid black;
+} 
+
+.game-and-chat{
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.game-join{
+  border: 1px solid black;
+  overflow: hidden;
+  padding: 0.25rem 0.25rem;
+  margin: 0.25rem 0.25rem;
+}
+
+.game-join button{
+  float: right;
+}
+
+.game-list{
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.game-list .list-title{
+  flex: 0 1 auto;
+  /* align-self: center; */
+  border-bottom: 1px solid grey;
+  width: 100%;
+  text-align: center;
+}
+.game-list .list-title h3{
+  margin: 0.25rem;
+}
+
+.game-list .list-section{
+  flex: 1 1 auto;
+}
+
+.game-list .game-create{
+  flex: 0 1 auto;
+  align-self: flex-end;
+}
+
+.lobby{
+  flex: 1 1 auto;
+  display: flex;
+}
+
+.logout{
+  margin-left: auto;
 }
 
 .nav-style{
@@ -62,6 +121,19 @@ body{
   
 }
 
+.profile-page{
+  flex: 1 0 auto;
+  padding-top: 50px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.profile-image{
+  height: 100px;
+  width: 100px;
+}
+
 .signup-login{
   position: absolute;
   top: 50%;
@@ -74,43 +146,8 @@ body{
   flex-direction: column;
 }
 
-.lobby{
-  flex: 1 1 auto;
-  display: flex;
-}
-
 .users-online-sidebar{
   flex: 0 1 auto;
   width: 10rem;
   border-right: 1px solid black;
-}
-
-.game-and-chat{
-  flex: 1 1 auto;
-  display: flex;
-  flex-direction: column;
-}
-
-.game-list{
-  flex: 1 1 auto;
-  display: flex;
-  flex-direction: column;
-}
-
-.game-list .list-title{
-  flex: 0 1 auto;
-  align-self: center;
-}
-
-.game-list .list-section{
-  flex: 1 1 auto;
-}
-
-.game-list .game-create{
-  flex: 0 1 auto;
-  align-self: flex-end;
-}
-
-.logout{
-  margin-left: auto;
 }
