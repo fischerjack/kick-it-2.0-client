@@ -27,7 +27,7 @@ class Lobby extends Component{
         <div className='lobby'>
           <UsersOnlineSidebar {...this.props} />
           <div className='game-and-chat'>
-            <GameView {...this.props} endGame={this.props.endGame}/>
+            <GameView {...this.props} endGame={this.props.endGame} topSocket={this.props.topSocket}/>
             <ChatBox {...this.props}/>
           </div>
           <FriendsListSidebar />

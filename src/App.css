@@ -4,7 +4,8 @@ body{
 }
 
 #canvas{
-  border: solid black 1px;
+  border-top: dashed grey 1px;
+  border-bottom: dashed grey 1px;
   background: white;
 }
 
@@ -97,6 +98,15 @@ body{
 .game-list .game-create{
   flex: 0 1 auto;
   align-self: flex-end;
+}
+
+.game-title-ingame{
+  flex: 0 1 auto;
+  /* align-self: center; */
+  /* border-bottom: 1px solid grey; */
+  width: 100%;
+  text-align: center;
+  margin: 0.25rem;
 }
 
 .lobby{

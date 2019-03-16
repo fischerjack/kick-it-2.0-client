@@ -23,6 +23,8 @@ import AuthService from './components/auth/auth-service';
 
 class App extends Component {
   
+  _isMounted = false;
+
   constructor(props){
     super(props);
     this.state = {
@@ -49,17 +51,28 @@ class App extends Component {
 
     this.topSocket.on('RECEIVE_UPDATE_GAMELIST', (gameList) => {
       console.log(gameList);
-      this.setState({
-        gameList
-      })
+      if(this._isMounted){
+        if(gameList.length > 0)
+        this.setState({
+          gameList: gameList,
+          inGame: true
+        });
+        else{
+          this.setState({
+            gameList: gameList,
+          });
+        }
+      }
     });
 
     this.topSocket.on('RECEIVE_END_GAME', (data) => {
-      console.log(data.message);
-      this.setState({
-        inGame: false,
-        gameList: data.gameList
-      });
+      if(this._isMounted){
+        console.log(data.message);
+        this.setState({
+          inGame: false,
+          gameList: data.gameList
+        });
+      }
     })
   }
 
@@ -70,10 +83,13 @@ class App extends Component {
   }
 
   componentDidMount() {
+    this._isMounted = true;
     window.addEventListener("beforeunload", e => this.handleWindowBeforeUnload(e));
+
   }
   
   componentWillUnmount() {
+    this._isMounted = false;
     window.removeEventListener("beforeunload", e => this.handleWindowBeforeUnload(e));
   }
 
@@ -110,9 +126,9 @@ class App extends Component {
     this.topSocket.emit('SEND_UPDATE_GAMELIST', {
       _id: this.state.loggedInUser._id
     });
-    this.setState({
-      inGame: true
-    })
+    // this.setState({
+    //   inGame: true
+    // })
   }
 
   endGame = () => {
@@ -150,7 +166,7 @@ class App extends Component {
         <div className='container'>
           <Navbar userInSession={this.state.loggedInUser} logoutUser={this.logoutUser}></Navbar>
           <Switch>
-            <ProtectedRoute loggedInUser={this.state.loggedInUser} exact path='/' render={() => <Lobby {...this.state} createNewGame={this.createNewGame} endGame={this.endGame}/>}/>
+            <ProtectedRoute loggedInUser={this.state.loggedInUser} exact path='/' render={() => <Lobby {...this.state} createNewGame={this.createNewGame} endGame={this.endGame} topSocket={this.topSocket}/>}/>
             <ProtectedRoute loggedInUser={this.state.loggedInUser} exact path='/profile' render={() => <Profile loggedInUser={this.state.loggedInUser} updateUserBio={this.updateUserBio} logoutUser={this.logoutUser}/>}/>
           </Switch>
           <div className='footer'></div>

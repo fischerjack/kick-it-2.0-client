@@ -5,8 +5,6 @@ class GameList extends Component{
 
   constructor(props){
     super(props);
-    console.log(this.props.gameList);
-
   }
 
   createNewGame = (e) => {
@@ -22,7 +20,6 @@ class GameList extends Component{
   }
 
   render(){
-    console.log(this.props.gameList);
     if(this.props.gameList === undefined){
       return (
         <div className='game-list'>
